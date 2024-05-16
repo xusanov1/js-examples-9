@@ -1,56 +1,102 @@
-let todo = {
-    name: "Go to Najot Ta’lim",
-    time: {
-        hour: 12,
-        minute: 30,
-        second: 20
+const addBtn = document.querySelector("#add-btn");
+const showBtn = document.querySelector("#show-btn");
+const deleteBtn = document.querySelector("#delete-btn");
+const sortBtn = document.querySelector("#sort-btn");
+const result = document.querySelector("#result");
+
+// CREATE TODO OBJECT
+function NewTodo(ntn, h, m, s, t){
+    this.id = (Math.floor(Math.random() * 100000)+ 1).toString().padStart(6, "0")
+    this.name = ntn
+    this.hours = h.toString().padStart(2, "0")
+    this.minutes = m.toString().padStart(2, "0")
+    this.seconds = s.toString().padStart(2, "0")
+    this.time = t
+}
+
+const ALL_TODOS = JSON.parse(localStorage.getItem("todos")) || [];
+
+// ADD TODO FUNCTION
+const addNewTodo = function(){
+    // TODO NOMI
+    let newTodoName = prompt("Enter new todoname: ");
+    if(newTodoName && newTodoName.trim() !== ""){
+            // DATE => TIME
+            let date = new Date()
+            let hours = date.getHours();
+            let minutes = date.getMinutes();
+            let seconds = date.getSeconds();
+            let time = date.getTime();
+            
+            // TODO OBJECT CREATE
+            let newTodoResult = new NewTodo(newTodoName, hours, minutes, seconds, time);
+
+            ALL_TODOS.push(newTodoResult);
+            localStorage.setItem("todos", JSON.stringify(ALL_TODOS));
     }
-};
-
-let todos = [];
-todos.push(todo);
-
-localStorage.setItem("todos", JSON.stringify(todos));
-
-function createObjectWithPrompt() {
-    let obj = {};
-    let propertyCount = parseInt(prompt("Enter the number of properties for the object:"));
-  
-    for (let i = 0; i < propertyCount; i++) {
-      let propertyName = prompt("Enter the name of property " + (i + 1) + ":");
-      let propertyValue = prompt("Enter the value of property " + (i + 1) + ":");
-      obj[propertyName] = propertyValue;
+    else{
+            alert("Please enter todo name!")
     }
-  
-    return obj;
-  }
-  
-  // Obyekt yaratish uchun funktsiyani chaqirish
-  let createdObject = createObjectWithPrompt();
-  console.log(createdObject);
-
-function showTodos() {
-    let todos = JSON.parse(localStorage.getItem("todos"));
-    todos.forEach(function (todo) {
-        console.log("Name: " + todo.name);
-        console.log("Time: " + todo.time.hour + ":" + todo.time.minute + ":" + todo.time.second);
-    });
 }
 
-function deleteTodo(id) {
-    let todos = JSON.parse(localStorage.getItem("todos"));
-    let updatedTodos = todos.filter(function (todo) {
-        return todo.id !== id;
-    });
-    localStorage.setItem("todos", JSON.stringify(updatedTodos));
+
+const showTodos = function(){
+    result.innerHTML = ""
+    ALL_TODOS.forEach(todo => {
+        result.innerHTML += `
+        <div class="container">
+            <div class="todo-item">
+                <span> id :${todo.id}</span>
+                <h2>${todo.name}</h2>
+                <span>${todo.hours} : ${todo.minutes} : ${todo.seconds}</span>
+            </div>
+        </div>
+        `
+    })
 }
 
-function sortTodo() {
-    let todos = JSON.parse(localStorage.getItem("todos"));
-    todos.sort(function (a, b) {
-        let timeA = a.time.hour * 3600 + a.time.minute * 60 + a.time.second;
-        let timeB = b.time.hour * 3600 + b.time.minute * 60 + b.time.second;
-        return timeA - timeB;
-    });
-    localStorage.setItem("todos", JSON.stringify(todos));
+
+const deleteTodo = function(){
+    let deleteId = prompt("Enter todo id: ");
+
+    if(deleteId){
+        let indexOfDeletedElement = ALL_TODOS.findIndex(element => element.id === deleteId);
+        ALL_TODOS.splice(indexOfDeletedElement, 1);
+        localStorage.setItem("todos", JSON.stringify(ALL_TODOS));
+    }
 }
+
+let sorted = false;
+
+const sortTodo = function(){
+
+    if(sorted === false){
+        sorted = true;
+        ALL_TODOS.sort((a, b) => {
+            if(a.time > b.time){
+                return -1
+            }
+            else{
+                return 1
+            }
+        })
+    }
+    else{
+        sorted = false;
+        ALL_TODOS.sort((a, b) => {
+            if(a.time > b.time){
+                return 1
+            }
+            else{
+                return -1
+            }
+        })
+    }
+    
+    showTodos();
+}
+// ADD TODO EVENT
+addBtn.addEventListener("click", addNewTodo);
+showBtn.addEventListener("click", showTodos);
+deleteBtn.addEventListener("click", deleteTodo);
+sortBtn.addEventListener("click", sortTodo);
