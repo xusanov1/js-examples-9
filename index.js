@@ -4,7 +4,6 @@ const deleteBtn = document.querySelector("#delete-btn");
 const sortBtn = document.querySelector("#sort-btn");
 const result = document.querySelector("#result");
 
-// CREATE TODO OBJECT
 function NewTodo(ntn, h, m, s, t){
     this.id = (Math.floor(Math.random() * 100000)+ 1).toString().padStart(6, "0")
     this.name = ntn
@@ -16,19 +15,15 @@ function NewTodo(ntn, h, m, s, t){
 
 const ALL_TODOS = JSON.parse(localStorage.getItem("todos")) || [];
 
-// ADD TODO FUNCTION
 const addNewTodo = function(){
-    // TODO NOMI
     let newTodoName = prompt("Enter new todoname: ");
     if(newTodoName && newTodoName.trim() !== ""){
-            // DATE => TIME
             let date = new Date()
             let hours = date.getHours();
             let minutes = date.getMinutes();
             let seconds = date.getSeconds();
             let time = date.getTime();
             
-            // TODO OBJECT CREATE
             let newTodoResult = new NewTodo(newTodoName, hours, minutes, seconds, time);
 
             ALL_TODOS.push(newTodoResult);
@@ -95,7 +90,6 @@ const sortTodo = function(){
     
     showTodos();
 }
-// ADD TODO EVENT
 addBtn.addEventListener("click", addNewTodo);
 showBtn.addEventListener("click", showTodos);
 deleteBtn.addEventListener("click", deleteTodo);
